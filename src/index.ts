@@ -1,9 +1,11 @@
+import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors'
 import { AddressInfo } from 'net';
 import router from './routes';
 
 // init project
+dotenv.config();
 let app = express();
 
 // enable cors
