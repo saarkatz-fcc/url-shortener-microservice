@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors'
 import { AddressInfo } from 'net';
@@ -6,6 +7,9 @@ import router from './routes';
 
 // init project
 dotenv.config();
+if (process.env.MONGO_URI) {
+    mongoose.connect(process.env.MONGO_URI);
+}
 let app = express();
 
 // enable cors
