@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import shortener_view from './shortener_service';
+import { create_shorturl, redirect_shorturl } from './shortener_service';
 
 const router = Router();
 
 
-router.get('/api/shorturl', shortener_view)
+router.post('/api/shorturl', create_shorturl)
+router.get('/api/shorturl/:shorturl', redirect_shorturl)
 
 
 export default router;

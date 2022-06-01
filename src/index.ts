@@ -15,8 +15,12 @@ let app = express();
 // enable cors
 app.use(cors({optionsSuccessStatus: 200}));
 
+// middleware for post requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // http://expressjs.com/en/starter/static-files.html
-app.use(express.static('public'));
+app.use('/public', express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (req, res) {
