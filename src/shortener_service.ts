@@ -1,3 +1,5 @@
+import util from 'node:util';
+import dns from 'node:dns';
 import { Request, Response } from 'express';
 import UrlRelation, { IUrlRelation } from './models/urlrelation';
 
@@ -25,6 +27,7 @@ async function try_get_or_create(url: URL, tries: number = 3, shorturl_length: n
     else {
         let success = false;
 
+        // For the slim chance that a link with the same generated short url exists, we will retry this operation a number of times.
         while (!success && tries > 0) {
             try {
                 url_relation.short_url = generate_string(shorturl_length);
@@ -37,6 +40,7 @@ async function try_get_or_create(url: URL, tries: number = 3, shorturl_length: n
             success = true;
         }
         
+        // In the case we failed to create a unique link we will return null.
         if (!success) {
             return null;
         }
@@ -61,11 +65,20 @@ async function create_shorturl(req:Request, res:Response) {
         return;
     }
 
+    // Varify hostname
+    try {
+        const lookup = util.promisify(dns.lookup);
+        await lookup(original_url.hostname);
+    }
+    catch {
+        res.status(400).json({ error: 'invalid hostname' });
+        return;
+    }
+
+    // Get an existing shorturl or create a new one
     const url_relation = await try_get_or_create(original_url)
     
-    // Save failed:
-    //  1. original_url already exists -> return the existing short_url
-    //  2. short_url already exists -> generate a new short_url and try again (limit!)
+    // Return the created url 
     if (url_relation) {
         res.json({ original_url: url_relation.og_url, short_url: url_relation.short_url });
     }
