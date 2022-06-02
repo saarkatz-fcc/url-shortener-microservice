@@ -67,6 +67,7 @@ async function create_shorturl(req:Request, res:Response) {
 
     // Varify hostname
     try {
+        // Warning: Possible side-channel attack. Take care with dns configuration of the host.
         const lookup = util.promisify(dns.lookup);
         await lookup(original_url.hostname);
     }
